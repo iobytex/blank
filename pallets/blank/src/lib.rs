@@ -4,8 +4,6 @@
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
-use log::{info,warn,trace,debug};
-use serde::{Serialize, Deserialize};
 
 #[cfg(test)]
 mod mock;
@@ -16,10 +14,44 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
+pub mod weight;
+
 #[frame_support::pallet]
 pub mod pallet {
-	use frame_support::pallet_prelude::*;
+	use frame_support::{pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
+	use log::{info,warn,trace,debug};
+	#[cfg(feature = "std")]
+    use frame_support::serde::{Deserialize, Serialize};
+	use crate::weight::CreateProductWeight;
+	use scale_info::TypeInfo;
+
+	#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo)]
+	pub struct Product{
+		pub name: Vec<u8>, 
+		pub price: u64,
+		pub size: u32,
+		pub quantity: u32,
+		pub gender: Gender,
+		pub created_on: u32,
+	}
+
+	#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, Default)]
+	pub struct MetaData<AccountId, Balance> {
+		issuance: Balance,
+		minter: AccountId,
+		burner: AccountId,
+	}
+
+
+	#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo)]
+	#[scale_info(skip_type_params(T))]
+	#[cfg_attr(feature = "std",derive(Serialize,Deserialize))]
+	pub enum Gender{
+		Male,
+		Female,
+		Unisex,
+	}
 
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
@@ -39,6 +71,19 @@ pub mod pallet {
 	// Learn more about declaring storage items:
 	// https://docs.substrate.io/v3/runtime/storage#declaring-storage-items
 	pub type Something<T> = StorageValue<_, u32>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn products)]
+	// Learn more about declaring storage items:
+	// https://docs.substrate.io/v3/runtime/storage#declaring-storage-items
+	// Product to quantity to gender 
+	pub type Products<T> = StorageValue<_, u32>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn product_owners)]
+	// Learn more about declaring storage items:
+	// https://docs.substrate.io/v3/runtime/storage#declaring-storage-items
+	pub type ProductOwners<T> = StorageValue<_, u32>;
 
 	// Pallets use events to inform users when important changes are made.
 	// https://docs.substrate.io/v3/runtime/events-and-errors
@@ -62,9 +107,44 @@ pub mod pallet {
 	// Define some logic that should be executed
     // regularly in some context, for e.g. on_initialize.
     #[pallet::hooks]
-    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> { 
-		
+    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+        fn on_finalize(_n: BlockNumberFor<T>) {}
+
+        fn on_idle(_n: BlockNumberFor<T>,
+		_remaining_weight: frame_support::weights::Weight,
+		) -> frame_support::weights::Weight 
+		{0}
+
+        fn on_initialize(_n: BlockNumberFor<T>) -> frame_support::weights::Weight {0}
+
+        fn on_runtime_upgrade() -> frame_support::weights::Weight {0}	
+
+        fn offchain_worker(_n: BlockNumberFor<T>) {}
+
+        fn integrity_test() {}
+    }
+
+	
+	#[pallet::genesis_config]
+	pub struct GenesisConfig<T: Config>{
+		members: Vec<T::AccountId>
 	}
+
+	// Required to implement default for GenesisConfig.
+	#[cfg(feature = "std")]
+	impl<T: Config> Default for GenesisConfig<T> {
+		fn default() -> GenesisConfig<T> {
+			GenesisConfig { members: todo!() }
+		}
+	}
+
+	#[pallet::genesis_build]
+	impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+		fn build(&self) {
+
+		}
+	}
+
 
 
 	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -72,6 +152,18 @@ pub mod pallet {
 	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
+
+		#[pallet::weight(CreateProductWeight(T::DbWeight::get().reads_writes(1, 2)))]
+		pub fn create_product(origin: OriginFor<T>,product_name: u128,price: u32, size :u32, gender: u32) -> DispatchResult {
+			
+			Ok(())
+		}
+		
+		#[pallet::weight(100)]
+		pub fn transfer_ownership(origin: OriginFor<T>) -> DispatchResult {
+			Ok(())
+		}
+
 		/// An example dispatchable that takes a singles value as a parameter, writes the value to
 		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
@@ -111,8 +203,10 @@ pub mod pallet {
 	}
 
 	impl<T: Config> Pallet<T> {
-		pub fn local() {
+		pub fn mint() {
 			
 		}
+
+
 	}
 }

@@ -3874,6 +3874,8 @@ dependencies = [
  "frame-support",
  "frame-system",
  "log",
+ "pallet-assets",
+ "pallet-transaction-storage",
  "parity-scale-codec",
  "scale-info",
  "serde",

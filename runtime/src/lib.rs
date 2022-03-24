@@ -266,24 +266,24 @@ impl pallet_sudo::Config for Runtime {
 	type Call = Call;
 }
 
-impl pallet_assets::Config for Runtime {
-	type Event = Event ;
-    type Balance = u64;
-	type AssetId = u32;
-	type Currency = Balances;
-	type ForceOrigin = frame_system::EnsureRoot<u64>;
-	type AssetDeposit = ConstU64<1>;
-	type AssetAccountDeposit = ConstU64<10>;
-	type MetadataDepositBase = ConstU64<1>;
-	type MetadataDepositPerByte = ConstU64<1>;
-	type ApprovalDeposit = ConstU64<1>;
-	type StringLimit = ConstU32<50>;
-	type Freezer = TestFreezer;
-	type WeightInfo = ();
-	type Extra = ();
-}
+// impl pallet_assets::Config for Runtime {
+// 	type Event = Event ;
+//     type Balance = u64;
+// 	type AssetId = u32;
+// 	type Currency = Balances;
+// 	type ForceOrigin = frame_system::EnsureRoot<u64>;
+// 	type AssetDeposit = ConstU64<1>;
+// 	type AssetAccountDeposit = ConstU64<10>;
+// 	type MetadataDepositBase = ConstU64<1>;
+// 	type MetadataDepositPerByte = ConstU64<1>;
+// 	type ApprovalDeposit = ConstU64<1>;
+// 	type StringLimit = ConstU32<50>;
+// 	type Freezer = TestFreezer;
+// 	type WeightInfo = ();
+// 	type Extra = ();
+// }
 
-impl pallet_transaction_storage for Runtime { 
+impl pallet_transaction_storage::Config for Runtime { 
 	type Event = Event ;
     type Call = Call ;
     type Currency = Balances;
@@ -311,25 +311,25 @@ construct_runtime!(
 		Balances: pallet_balances,
 		TransactionPayment: pallet_transaction_payment,
 		Sudo: pallet_sudo,
-		Asset: pallet_assets,
+		//Asset: pallet_assets,
 		TransactionStorage: pallet_transaction_storage,
 		// Include the custom logic from the pallet-template in the runtime.
 		BlankModule: pallet_blank,
 	}
 );
 
-pub struct TestFreezer;
-impl FrozenBalance<u32, u64, u64> for TestFreezer {
-	fn frozen_balance(asset: u32, who: &u64) -> Option<u64> {
-		FROZEN.with(|f| f.borrow().get(&(asset, who.clone())).cloned())
-	}
+// pub struct TestFreezer;
+// impl FrozenBalance<u32, u64, u64> for TestFreezer {
+// 	fn frozen_balance(asset: u32, who: &u64) -> Option<u64> {
+// 		FROZEN.with(|f| f.borrow().get(&(asset, who.clone())).cloned())
+// 	}
 
-	fn died(asset: u32, who: &u64) {
-		HOOKS.with(|h| h.borrow_mut().push(Hook::Died(asset, who.clone())));
-		// Sanity check: dead accounts have no balance.
-		assert!(Assets::balance(asset, *who).is_zero());
-	}
-}
+// 	fn died(asset: u32, who: &u64) {
+// 		HOOKS.with(|h| h.borrow_mut().push(Hook::Died(asset, who.clone())));
+// 		// Sanity check: dead accounts have no balance.
+// 		assert!(Assets::balance(asset, *who).is_zero());
+// 	}
+// }
 
 
 /// The address format for describing accounts.
