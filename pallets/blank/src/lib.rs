@@ -15,17 +15,18 @@ mod tests;
 mod benchmarking;
 
 pub mod weight;
+use log::{info,warn,trace,debug};
+use weight::CreateProductWeight;
+use scale_info::TypeInfo;
+use serde::{Serialize, Deserialize};
+use sp_std::{self, prelude::*, result};
 
 #[frame_support::pallet]
 pub mod pallet {
+	use super::*;
 	use frame_support::{pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
-	use log::{info,warn,trace,debug};
-	#[cfg(feature = "std")]
-    use frame_support::serde::{Deserialize, Serialize};
-	use crate::weight::CreateProductWeight;
-	use scale_info::TypeInfo;
-
+	
 	#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo)]
 	pub struct Product{
 		pub name: Vec<u8>, 

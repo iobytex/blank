@@ -23,10 +23,10 @@ frame-benchmarking = { default-features = false, version = "4.0.0-dev", git = "h
 
 #Newly added crates
 log = { version = "0.4.14", default-features = false }
-serde = {version = "1.0.136", default-features = false}
+serde = {version = "1.0.136", default-features = false, features = ['derive']}
 pallet-assets = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17" }
 pallet-transaction-storage = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17" }
-
+sp-std = {version= "4.0.0", default-features = false,  git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17"}
 
 [dev-dependencies]
 sp-core = { default-features = false, version = "5.0.0", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17" }
@@ -44,6 +44,7 @@ std = [
 	
 	"pallet-assets/std",
 	"pallet-transaction-storage/std",
+	"sp-std/std",
 ]
 
 runtime-benchmarks = ["frame-benchmarking/runtime-benchmarks"]
