@@ -4,9 +4,6 @@
 
 A fresh FRAME-based [Substrate](https://www.substrate.io/) node, ready for hacking :rocket:
 
-## Blank
-NFTs(Assets), Land Ownership, Land Lending
-
 ## Getting Started
 
 Follow the steps below to get started with the Node Template, or get it up and running right from
